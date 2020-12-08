@@ -5,9 +5,14 @@
  */
 package javaprojectserver;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -21,22 +26,19 @@ public class JavaProjectServer extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
+       
         
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("StartServer.fxml"));
+        } catch (IOException ex) {
+            Logger.getLogger(JavaProjectServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
-        Scene scene = new Scene(root, 300, 250);
         
-        primaryStage.setTitle("Hello World!");
+        Scene scene = new Scene(root);
+        
+        primaryStage.setTitle("Server GUI!");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
