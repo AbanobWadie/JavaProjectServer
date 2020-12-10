@@ -23,7 +23,7 @@ public class DatabaseProcess {
     public boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "a", "a");
 
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
@@ -172,7 +172,7 @@ public class DatabaseProcess {
         ResultSet rs;
         PreparedStatement pst;
         try {
-            pst = con.prepareStatement("select * from USERDATA where STATE = ? and avaiable = ?");
+            pst = con.prepareStatement("select * from USERDATA where STATE = ? and AVAILABLE = ?");
             pst.setString(1, "online");
              pst.setString(2, "yes");
             rs = pst.executeQuery();
@@ -221,7 +221,7 @@ public class DatabaseProcess {
         PreparedStatement pst;
         ResultSet rs;
         try {
-            pst = con.prepareStatement("select AVILABLE from USERDATA where USERNAME = ?");
+            pst = con.prepareStatement("select AVAILABLE from USERDATA where USERNAME = ?");
             pst.setString(1, userName);
             rs = pst.executeQuery();
             if (rs.next()) {
