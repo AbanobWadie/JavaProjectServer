@@ -241,15 +241,22 @@ public class XoServer {
                 Enumeration<InetAddress> addresses = iface.getInetAddresses();
                 while (addresses.hasMoreElements()) {
                     InetAddress addr = addresses.nextElement();
-                     System.out.println(iface.getDisplayName() + " " + ip);
+                   
+                        
+                    
+                    // System.out.println(iface.getDisplayName() + " " + ip);
 
-
+                    if(iface.getDisplayName().contains("Wireless-AC")){
+                        System.out.println(iface.getDisplayName() + " " + ip);
+                        ip = addr.getHostAddress();
+                        break;
+                    }
                     // EDIT
                     if (addr instanceof InetAddress) {
                         continue;
                     }
 
-                    ip = addr.getHostAddress();
+                    
 
                 }
             }
