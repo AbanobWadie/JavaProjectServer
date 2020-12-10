@@ -11,9 +11,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
@@ -37,9 +40,10 @@ public class XoServer {
 
     public XoServer() {
         db.init();
-        int PORT = 5555;
+        int PORT = 5005;
         try {
-            server = new ServerSocket(5555);
+            server = new ServerSocket(5005);
+            
         } catch (IOException ex) {
             Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -70,11 +74,6 @@ public class XoServer {
         }).start();
 
     }
-
-       
-    
-    
-    //asasa
 
     class clientHandler implements Runnable {
 
@@ -228,4 +227,38 @@ public class XoServer {
         }
 
     }
+
+    public String getIP() {
+        String ip = null;
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                // filters out 127.0.0.1 and inactive interfaces
+                if (iface.isLoopback() || !iface.isUp()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                     System.out.println(iface.getDisplayName() + " " + ip);
+
+
+                    // EDIT
+                    if (addr instanceof InetAddress) {
+                        continue;
+                    }
+
+                    ip = addr.getHostAddress();
+
+                }
+            }
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("server");
+
+        return ip;
+    }
+
 }

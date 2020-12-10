@@ -135,8 +135,8 @@ public class DatabaseProcess {
         return false;
     }
 
-    public ArrayList<User> getOnlineUsers() {
-        ArrayList<User> arr = new ArrayList<>();
+    public ArrayList<String> getOnlineUsers() {
+        ArrayList<String> arr = new ArrayList<>();
         ResultSet rs;
         PreparedStatement pst;
         try {
@@ -144,7 +144,39 @@ public class DatabaseProcess {
             pst.setString(1, "online");
             rs = pst.executeQuery();
             while (rs.next()) {
-                arr.add(new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4)));
+                arr.add((rs.getString(1)));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return arr;
+    }
+      public ArrayList<String> getOfflineUsers() {
+        ArrayList<String> arr = new ArrayList<>();
+        ResultSet rs;
+        PreparedStatement pst;
+        try {
+            pst = con.prepareStatement("select * from USERDATA where STATE = ?");
+            pst.setString(1, "offline");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                arr.add((rs.getString(1)));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return arr;
+    }
+        public ArrayList<String> getActiveUsers() {
+        ArrayList<String> arr = new ArrayList<>();
+        ResultSet rs;
+        PreparedStatement pst;
+        try {
+            pst = con.prepareStatement("select * from USERDATA where STATE = ?");
+            pst.setString(1, "active");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                arr.add((rs.getString(1)));
             }
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
