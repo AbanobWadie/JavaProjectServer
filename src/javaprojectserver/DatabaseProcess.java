@@ -172,8 +172,9 @@ public class DatabaseProcess {
         ResultSet rs;
         PreparedStatement pst;
         try {
-            pst = con.prepareStatement("select * from USERDATA where STATE = ?");
-            pst.setString(1, "active");
+            pst = con.prepareStatement("select * from USERDATA where STATE = ? and avaiable = ?");
+            pst.setString(1, "online");
+             pst.setString(2, "yes");
             rs = pst.executeQuery();
             while (rs.next()) {
                 arr.add((rs.getString(1)));
