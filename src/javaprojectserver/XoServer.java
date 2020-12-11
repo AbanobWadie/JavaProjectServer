@@ -30,20 +30,20 @@ import java.util.logging.Logger;
  */
 public class XoServer {
 
-    volatile ServerSocket server;
-    volatile DatabaseProcess db = new DatabaseProcess();
-    volatile HashMap<String, PrintWriter> userOut = new HashMap<>();
-    volatile HashMap<String, BufferedReader> userIn = new HashMap<>();
-    static volatile HashMap<Integer, Thread> threadMap = new HashMap<>();
-    ;
-    volatile Thread th;
+    private static ServerSocket server;
+    public volatile static DatabaseProcess db = new DatabaseProcess();
+    private static volatile HashMap<String, PrintWriter> userOut = new HashMap<>();
+    private static volatile HashMap<String, BufferedReader> userIn = new HashMap<>();
+    private static volatile HashMap<Integer, Thread> threadMap = new HashMap<>();
+    private volatile Thread th;
+    private static boolean runing = true;
 
     public XoServer() {
         db.init();
         int PORT = 5005;
         try {
             server = new ServerSocket(5005);
-            
+
         } catch (IOException ex) {
             Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -51,7 +51,7 @@ public class XoServer {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true) {
+                while (runing) {
                     try {
                         Socket ss = server.accept();
                         th = new Thread(new clientHandler(ss));
@@ -92,10 +92,10 @@ public class XoServer {
                 PrintWriter out = new PrintWriter(
                         socket.getOutputStream());
                 String req;
-                String currentUser;
+                String currentUser = null;
                 String password;
                 String rule;
-                while (true) {
+                while (runing) {
 
                     String request = in.readLine();
                     StringTokenizer st = new StringTokenizer(request);
@@ -133,88 +133,100 @@ public class XoServer {
 
                 userOut.put(currentUser, out);
                 userIn.put(currentUser, in);
-
+                db.updateUserAvailabelty(currentUser, true);
+                db.updateUserState(currentUser, true);
                 PrintWriter otherOut;
                 BufferedReader otherIN;
-                while (true) {
-                    for (String st : userOut.keySet()) {
+                while (runing) {
+                    for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
                             out.println(st);
                         }
                     }
                     out.flush();
-                    rule = in.readLine();
-                    System.out.println(rule);
-                    if (rule.equals("exit")) {
-                        userOut.remove(currentUser);
-                        userIn.remove(currentUser);
-                        threadMap.remove(socket.getPort());
-                        return;
-                    } else if (rule.contains("play")) {
-                        String st[] = rule.split(" ");
-                        String otherUser = st[1];
-                        System.out.println(otherUser);
-                        if (userOut.containsKey(otherUser)) {
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if (in.ready()) {
+                        rule = in.readLine();
+                        System.out.println(rule);
+                        if (rule.equals("exit")) {
+                            userOut.remove(currentUser);
+                            userIn.remove(currentUser);
+                            threadMap.remove(socket.getPort());
+                            return;
+                        } else if (rule.contains("play")) {
+                            String st[] = rule.split(" ");
+                            String otherUser = st[1];
                             System.out.println(otherUser);
-                            otherOut = userOut.get(otherUser);
-                            otherIN = userIn.get(otherUser);
-                            otherOut.println("play request from " + currentUser);
-                            System.out.println("hi");
-                            out.flush();
+                            if (userOut.containsKey(otherUser)) {
+                                System.out.println(otherUser);
+                                otherOut = userOut.get(otherUser);
+                                otherIN = userIn.get(otherUser);
+                                otherOut.println("play request from " + currentUser);
+                                System.out.println("hi");
+                                out.flush();
 
-                            if (otherIN.readLine().equals("ok")) {
-                                userOut.remove(otherUser);
-                                userIn.remove(otherUser);
-                                userOut.remove(currentUser);
-                                userIn.remove(currentUser);
-                                out.println("ok");
-                                out.flush();
-                                out.println("x");
-                                otherOut.println("o");
-                                out.flush();
-                                otherOut.flush();
-                                String userOption;
-                                while (true) {
-                                    userOption = in.readLine();
-                                    if (userOption.contains("win")) {
-                                        otherOut.println(userOption.replace("win", ""));
-                                        otherOut.flush();
-                                        db.updateScore(db.getScore(currentUser) + 10, currentUser);
-                                        break;
-                                    }
-                                    if (userOption.equals("exit")) {
-                                        db.updateScore(db.getScore(otherUser) + 10, otherUser);
-                                        threadMap.remove(socket.getPort()).stop();
-                                        break;
-                                    }
-                                    otherOut.println(userOption);
+                                if (otherIN.readLine().equals("ok")) {
+                                    userOut.remove(otherUser);
+                                    userIn.remove(otherUser);
+                                    userOut.remove(currentUser);
+                                    userIn.remove(currentUser);
+                                    db.updateUserAvailabelty(otherUser, false);
+                                    db.updateUserAvailabelty(currentUser, false);
+                                    out.println("ok");
+                                    out.flush();
+                                    out.println("x");
+                                    otherOut.println("o");
+                                    out.flush();
                                     otherOut.flush();
-                                    userOption = otherIN.readLine();
-                                    if (userOption.contains("win")) {
-                                        out.println(userOption.replace("win", ""));
+                                    String userOption;
+                                    while (runing) {
+                                        userOption = in.readLine();
+                                        if (userOption.contains("win")) {
+                                            otherOut.println(userOption.replace("win", ""));
+                                            otherOut.flush();
+                                            db.updateScore(db.getScore(currentUser) + 10, currentUser);
+                                            break;
+                                        }
+                                        if (userOption.equals("exit")) {
+                                            db.updateScore(db.getScore(otherUser) + 10, otherUser);
+                                            threadMap.remove(socket.getPort());
+                                            break;
+                                        }
+                                        otherOut.println(userOption);
+                                        otherOut.flush();
+                                        userOption = otherIN.readLine();
+                                        if (userOption.contains("win")) {
+                                            out.println(userOption.replace("win", ""));
+                                            out.flush();
+                                            db.updateScore(db.getScore(otherUser) + 10, otherUser);
+                                            break;
+                                        }
+                                        if (userOption.equals("exit")) {
+                                            db.updateScore(db.getScore(currentUser) + 10, currentUser);
+                                            threadMap.remove(socket.getPort());
+                                            break;
+                                        }
+                                        out.println(userOption);
                                         out.flush();
-                                        db.updateScore(db.getScore(otherUser) + 10, otherUser);
-                                        break;
                                     }
-                                    if (userOption.equals("exit")) {
-                                        db.updateScore(db.getScore(currentUser) + 10, currentUser);
-                                        threadMap.remove(socket.getPort()).stop();
-                                        break;
-                                    }
-                                    out.println(userOption);
+                                    userOut.put(otherUser, otherOut);
+                                    userIn.put(otherUser, otherIN);
+                                    userOut.put(currentUser, out);
+                                    userIn.put(currentUser, in);
+                                    db.updateUserAvailabelty(otherUser, true);
+                                    db.updateUserAvailabelty(currentUser, true);
+                                } else {
+                                    out.println("no");
                                     out.flush();
                                 }
-                                userOut.put(otherUser, otherOut);
-                                userIn.put(otherUser, otherIN);
-                                userOut.put(currentUser, out);
-                                userIn.put(currentUser, in);
                             } else {
-                                out.println("no");
-                                out.flush();
+                                threadMap.remove(socket.getPort());
+                                break;
                             }
-                        } else {
-                            threadMap.remove(socket.getPort());
-                            break;
                         }
                     }
 
@@ -241,12 +253,9 @@ public class XoServer {
                 Enumeration<InetAddress> addresses = iface.getInetAddresses();
                 while (addresses.hasMoreElements()) {
                     InetAddress addr = addresses.nextElement();
-                   
-                        
-                    
-                    // System.out.println(iface.getDisplayName() + " " + ip);
 
-                    if(iface.getDisplayName().contains("Wireless-AC")){
+                    // System.out.println(iface.getDisplayName() + " " + ip);
+                    if (iface.getDisplayName().contains("Wireless-AC")) {
                         System.out.println(iface.getDisplayName() + " " + ip);
                         ip = addr.getHostAddress();
                         break;
@@ -255,8 +264,6 @@ public class XoServer {
                     if (addr instanceof InetAddress) {
                         continue;
                     }
-
-                    
 
                 }
             }
@@ -268,4 +275,10 @@ public class XoServer {
         return ip;
     }
 
+    public static void closeServer() {
+
+        runing = false;
+       
+
+    }
 }

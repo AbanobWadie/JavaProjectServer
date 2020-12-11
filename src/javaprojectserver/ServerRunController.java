@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,7 +46,6 @@ public class ServerRunController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    
     @FXML
     private Label online;
     @FXML
@@ -59,7 +59,7 @@ public class ServerRunController implements Initializable {
     @FXML
     private ListView<String> offlineList;
     @FXML
-    private ListView <String>activeList;
+    private ListView<String> activeList;
     @FXML
     private Text onlineTotalText;
     @FXML
@@ -70,57 +70,66 @@ public class ServerRunController implements Initializable {
     private Text ipText;
     @FXML
     private PieChart pieChart;
-   
-    
+    volatile int onlineUser, offlineUser, activeUser;
+
     @FXML
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        XoServer server=new XoServer();
+        XoServer server = new XoServer();
         ipText.setText(server.getIP());
-        ObservableList<String> listOnline=FXCollections.observableArrayList( server.db.getOnlineUsers());
-        ObservableList<String> listOffline = FXCollections.observableArrayList(server.db.getOfflineUsers());
-        ObservableList<String> listActive = FXCollections.observableArrayList(server.db.getActiveUsers());
-
-        onlineList.setItems(listOnline);
-        offlineList.setItems(listOffline);
-        activeList.setItems(listActive);
-        
-         ObservableList<PieChart.Data> pieChartData
-                = FXCollections.observableArrayList(
-                new PieChart.Data("Offline",listOffline.size()),
-                new PieChart.Data("Online", listOnline.size()),
-                new PieChart.Data("Active", listActive.size()) );
-
-        pieChart.setData(pieChartData);
-        pieChart.getStyle();
+        String style = pieChart.getStyle();
         pieChart.setTitle("Chart show Active,Online And Offline Users ");
         pieChart.setMaxSize(800, 800);
         pieChart.setLabelLineLength(10);
         pieChart.setLegendSide(Side.LEFT);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    ObservableList<String> listOnline = FXCollections.observableArrayList(server.db.getOnlineUsers());
+                    ObservableList<String> listOffline = FXCollections.observableArrayList(server.db.getOfflineUsers());
+                    ObservableList<String> listActive = FXCollections.observableArrayList(server.db.getActiveUsers());
+
+                    onlineList.setItems(listOnline);
+                    offlineList.setItems(listOffline);
+                    activeList.setItems(listActive);
+                    if (listOffline.size() != offlineUser || listOnline.size() != onlineUser || activeUser != listActive.size()) {
+                        offlineUser = listOffline.size();
+                        onlineUser = listOnline.size();
+                        activeUser = listActive.size();
+                        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
+                                new PieChart.Data("Offline", offlineUser),
+                                new PieChart.Data("Online", onlineUser),
+                                new PieChart.Data("Active", activeUser));
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                pieChart.setData(pieChartData);
+                            }
+                        });
+                    }
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ServerRunController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            }
+        }).start();
+
         stopServer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                
-                System.out.println("helllllllllllllllllllllllllllllo");
+
+                XoServer.closeServer();
+                System.exit(0);
             }
-        }); 
-         
+        });
+
         // TODO
-    }  
-     /*   private void stopServer(ActionEvent event) {
-            stopServer.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                
-                System.out.println("helllllllllllllllllllllllllllllo");
-            }
-        }); 
-    }*/
-    
-    
-        
-    
-  
-    
+    }
+
 }
