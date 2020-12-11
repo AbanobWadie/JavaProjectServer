@@ -70,9 +70,10 @@ public class ServerRunController implements Initializable {
     private Text ipText;
     @FXML
     private PieChart pieChart;
-    
+   
     
     @FXML
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         XoServer server=new XoServer();
@@ -97,10 +98,26 @@ public class ServerRunController implements Initializable {
         pieChart.setMaxSize(800, 800);
         pieChart.setLabelLineLength(10);
         pieChart.setLegendSide(Side.LEFT);
-      
-       
+        stopServer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                System.out.println("helllllllllllllllllllllllllllllo");
+            }
+        }); 
+         
         // TODO
     }  
+     /*   private void stopServer(ActionEvent event) {
+            stopServer.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                
+                System.out.println("helllllllllllllllllllllllllllllo");
+            }
+        }); 
+    }*/
+    
     
         
     
