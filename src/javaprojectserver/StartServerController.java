@@ -33,11 +33,11 @@ public class StartServerController implements Initializable {
     
    
      @FXML
-    Button btnStartServer = new Button();
+    Button btnStartServer;
      
       
     @FXML
-    private void startServer(ActionEvent event) {
+   private void startServer(ActionEvent event) {
             
     }
     
