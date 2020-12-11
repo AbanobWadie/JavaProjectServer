@@ -33,25 +33,22 @@ public class StartServerController implements Initializable {
     
    
      @FXML
-
-    Button btnStartServer = new Button();
+    Button btnStartServer;
      
-    
-    
+      
     @FXML
-    private void startServer(ActionEvent event) {
+   private void startServer(ActionEvent event) {
             
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
            btnStartServer.setOnAction(new EventHandler<ActionEvent>(){
         
           @Override
           public void handle(ActionEvent e) {
               try {
-                
                  Parent root = FXMLLoader.load(getClass().getResource("ServerRun.fxml"));
                  Scene scene = new Scene(root);
                  Stage stage=(Stage)((Node)e.getSource()).getScene().getWindow();

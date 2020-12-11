@@ -87,9 +87,9 @@ public class DatabaseProcess {
 
                     pst.setString(1, userName);
                     pst.setString(2, password);
-                    pst.setString(3, "online");
+                    pst.setBoolean(3, true);
                     pst.setInt(4, 0);
-                    pst.setString(5, "yes");
+                    pst.setBoolean(5, true);
                     pst.execute();
                 }
                 return true;
@@ -135,16 +135,16 @@ public class DatabaseProcess {
         return false;
     }
 
-    public ArrayList<User> getOnlineUsers() {
-        ArrayList<User> arr = new ArrayList<>();
+    public ArrayList<String> getOnlineUsers() {
+        ArrayList<String> arr = new ArrayList<>();
         ResultSet rs;
         PreparedStatement pst;
         try {
-            pst = con.prepareStatement("select * from USERDATA where STATE = ?");
-            pst.setString(1, "online");
+            pst = con.prepareStatement("select USERNAME from USERDATA where STATE = ?");
+            pst.setBoolean(1, true);
             rs = pst.executeQuery();
             while (rs.next()) {
-                arr.add(new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4)));
+                arr.add((rs.getString(1)));
             }
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
@@ -152,12 +152,47 @@ public class DatabaseProcess {
         return arr;
     }
 
-    public boolean updateUserState(String USERNAME, String STATE) {
+    public ArrayList<String> getOfflineUsers() {
+        ArrayList<String> arr = new ArrayList<>();
+        ResultSet rs;
+        PreparedStatement pst;
+        try {
+            pst = con.prepareStatement("select USERNAME from USERDATA where STATE = ?");
+            pst.setBoolean(1, false);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                arr.add((rs.getString(1)));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return arr;
+    }
+
+    public ArrayList<String> getActiveUsers() {
+        ArrayList<String> arr = new ArrayList<>();
+        ResultSet rs;
+        PreparedStatement pst;
+        try {
+            pst = con.prepareStatement("select USERNAME from USERDATA where STATE = ? and AVAILABLE = ?");
+            pst.setBoolean(1, true);
+            pst.setBoolean(2, true);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                arr.add((rs.getString(1)));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return arr;
+    }
+
+    public boolean updateUserState(String USERNAME, boolean STATE) {
 
         PreparedStatement pst;
         try {
             pst = con.prepareStatement("UPDATE USERDATA SET STATE = ? where USERNAME=?");
-            pst.setString(1, STATE);
+            pst.setBoolean(1, STATE);
             pst.setString(2, USERNAME);
             pst.execute();
             return true;
@@ -168,12 +203,12 @@ public class DatabaseProcess {
         return false;
     }
 
-    public boolean updateUserAvailabelty(String USERNAME, String STATE) {
+    public boolean updateUserAvailabelty(String USERNAME, boolean AVAILABLE) {
 
         PreparedStatement pst;
         try {
             pst = con.prepareStatement("UPDATE USERDATA SET AVAILABLE = ? where USERNAME=?");
-            pst.setString(1, STATE);
+            pst.setBoolean(1, AVAILABLE);
             pst.setString(2, USERNAME);
             pst.execute();
             return true;
@@ -188,11 +223,11 @@ public class DatabaseProcess {
         PreparedStatement pst;
         ResultSet rs;
         try {
-            pst = con.prepareStatement("select AVILABLE from USERDATA where USERNAME = ?");
+            pst = con.prepareStatement("select AVAILABLE from USERDATA where USERNAME = ?");
             pst.setString(1, userName);
             rs = pst.executeQuery();
             if (rs.next()) {
-                return rs.getString(1).equals("yes");
+                return rs.getBoolean(1);
             }
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
