@@ -20,12 +20,17 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -63,6 +68,8 @@ public class ServerRunController implements Initializable {
     private Text activeTotalText;
     @FXML
     private Text ipText;
+    @FXML
+    private PieChart pieChart;
     
     
     @FXML
@@ -74,18 +81,28 @@ public class ServerRunController implements Initializable {
         ObservableList<String> listOffline = FXCollections.observableArrayList(server.db.getOfflineUsers());
         ObservableList<String> listActive = FXCollections.observableArrayList(server.db.getActiveUsers());
 
-       onlineList.setItems(listOnline);
+        onlineList.setItems(listOnline);
         offlineList.setItems(listOffline);
         activeList.setItems(listActive);
         
-        
-     //  onlineList.setItems((ObservableList) server.db.getOnlineUsers());
-     //   offlineList.setItems((ObservableList) server.db.getOfflineUsers());
-     //   activeList.setItems((ObservableList) server.db.getActiveUsers());
+         ObservableList<PieChart.Data> pieChartData
+                = FXCollections.observableArrayList(
+                new PieChart.Data("Offline",listOffline.size()),
+                new PieChart.Data("Online", listOnline.size()),
+                new PieChart.Data("Active", listActive.size()) );
+
+        pieChart.setData(pieChartData);
+        pieChart.getStyle();
+        pieChart.setTitle("Chart show Active,Online And Offline Users ");
+        pieChart.setMaxSize(800, 800);
+        pieChart.setLabelLineLength(10);
+        pieChart.setLegendSide(Side.LEFT);
       
        
         // TODO
     }  
+    
+        
     
   
     
