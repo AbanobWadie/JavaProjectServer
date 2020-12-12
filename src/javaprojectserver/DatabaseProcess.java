@@ -23,7 +23,7 @@ public class DatabaseProcess {
     public boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "a", "a");
 
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
@@ -213,6 +213,28 @@ public class DatabaseProcess {
             pst.setString(2, USERNAME);
             pst.execute();
             return true;
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+
+        }
+        return false;
+    }
+
+    public boolean updatePassword(String USERNAME, String Password) {
+
+        PreparedStatement pst;
+        ResultSet rs;
+        try {
+            pst = con.prepareStatement("select * from USERDATA where USERNAME = ?");
+            pst.setString(1, USERNAME);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                pst = con.prepareStatement("UPDATE USERDATA SET AVAILABLE = ? where USERNAME=?");
+                pst.setString(1, Password);
+                pst.setString(2, USERNAME);
+                pst.execute();
+                return true;
+            }
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
 

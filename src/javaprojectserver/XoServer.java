@@ -115,6 +115,16 @@ public class XoServer {
                                 out.println("false");
                                 out.flush();
                             }
+                        } else if (req.equals("singup")) {
+                            if (db.SignUp(currentUser, password)) {
+                                out.println("true");
+                                out.flush();
+                                break;
+                            } else {
+                                out.println("false");
+                                out.flush();
+                            }
+
                         }
                     } else {
 
@@ -123,7 +133,7 @@ public class XoServer {
                     }
 
                 }
-                
+
                 userOut.put(currentUser, out);
                 userIn.put(currentUser, in);
                 db.updateUserAvailabelty(currentUser, true);
@@ -133,7 +143,7 @@ public class XoServer {
                 while (runing) {
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
-                            out.println(st);
+                            out.println(st + " " + db.isAvailable(st));
                         }
                     }
                     out.println("end");
