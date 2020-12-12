@@ -92,9 +92,15 @@ public class ServerRunController implements Initializable {
                     ObservableList<String> listOffline = FXCollections.observableArrayList(server.db.getOfflineUsers());
                     ObservableList<String> listActive = FXCollections.observableArrayList(server.db.getActiveUsers());
 
-                    onlineList.setItems(listOnline);
-                    offlineList.setItems(listOffline);
-                    activeList.setItems(listActive);
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            onlineList.setItems(listOnline);
+                            offlineList.setItems(listOffline);
+                            activeList.setItems(listActive);
+                        }
+                    });
+
                     if (listOffline.size() != offlineUser || listOnline.size() != onlineUser || activeUser != listActive.size()) {
                         offlineUser = listOffline.size();
                         onlineUser = listOnline.size();

@@ -61,13 +61,6 @@ public class XoServer {
 
                     } catch (IOException e) {
                         Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, e);
-                    } finally {
-
-                        try {
-                            server.close();
-                        } catch (IOException ex) {
-                            Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
                     }
                 }
             }
@@ -130,7 +123,7 @@ public class XoServer {
                     }
 
                 }
-
+                
                 userOut.put(currentUser, out);
                 userIn.put(currentUser, in);
                 db.updateUserAvailabelty(currentUser, true);
@@ -143,9 +136,10 @@ public class XoServer {
                             out.println(st);
                         }
                     }
+                    out.println("end");
                     out.flush();
                     try {
-                        Thread.sleep(1000L);
+                        Thread.sleep(3000L);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -278,7 +272,11 @@ public class XoServer {
     public static void closeServer() {
 
         runing = false;
-       
+        try {
+            server.close();
+        } catch (IOException ex) {
+            Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 }
