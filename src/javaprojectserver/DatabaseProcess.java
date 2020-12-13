@@ -23,7 +23,7 @@ public class DatabaseProcess {
     public boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "a", "a");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
 
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);

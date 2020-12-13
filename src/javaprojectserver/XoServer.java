@@ -143,7 +143,10 @@ public class XoServer {
                 while (runing) {
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
-                            out.println(st + " " + db.isAvailable(st));
+                            if(db.isAvailable(st))
+                                out.println(st + "  (In-Game)");
+                            else
+                                out.println(st);
                         }
                     }
                     out.println("end");
@@ -160,6 +163,9 @@ public class XoServer {
                             userOut.remove(currentUser);
                             userIn.remove(currentUser);
                             threadMap.remove(socket.getPort());
+                            
+                            db.updateUserState(currentUser, false);
+                            db.updateUserAvailabelty(currentUser, false);
                             return;
                         } else if (rule.contains("play")) {
                             String st[] = rule.split(" ");
