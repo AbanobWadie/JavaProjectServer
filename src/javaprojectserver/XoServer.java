@@ -150,7 +150,7 @@ public class XoServer {
                         db.updateUserAvailabelty(currentUser, false);
                         return;
                     }
-                    StringBuilder sb=new StringBuilder();
+                    StringBuilder sb = new StringBuilder();
                     sb.append("(online-list) ");
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
@@ -237,12 +237,18 @@ public class XoServer {
                                             db.updateScore(db.getScore(currentUser) + 10, currentUser);
                                             terminate.put(otherUser, "break");
                                             break;
-                                        } else if (userOption.equals("exit")) {
+                                        } else if (userOption.equals("back")) {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                             terminate.put(otherUser, "break");
                                             otherOut.println("other player exit");
                                             otherOut.flush();
                                             break;
+                                        } else if (userOption.equals("exit")) {
+                                            db.updateScore(db.getScore(otherUser) + 10, otherUser);
+                                            terminate.put(otherUser, "break");
+                                            otherOut.println("other player exit");
+                                            otherOut.flush();
+                                            return;
                                         } else if (userOption.equals("draw")) {
                                             terminate.put(otherUser, "break");
                                             break;
@@ -261,10 +267,16 @@ public class XoServer {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                             terminate.put(otherUser, "break");
                                             break;
-                                        } else if (userOption.equals("exit")) {
+                                        } else if (userOption.equals("back")) {
                                             db.updateScore(db.getScore(currentUser) + 10, currentUser);
                                             terminate.put(otherUser, "break");
                                             break;
+                                        } else if (userOption.equals("exit")) {
+                                            db.updateScore(db.getScore(currentUser) + 10, currentUser);
+                                            terminate.put(otherUser, "return");
+                                            otherOut.println("other player exit");
+                                            otherOut.flush();
+                                            return;
                                         } else if (userOption.equals("draw")) {
                                             terminate.put(otherUser, "break");
                                             break;
