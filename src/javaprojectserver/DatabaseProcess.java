@@ -13,24 +13,34 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import org.apache.derby.jdbc.ClientDriver;
 
 public class DatabaseProcess {
 
     private ResultSet rsid;
-    private Connection con;
+    private static Connection con;
 
-    public boolean init() {
+    public static boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
             con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "a", "a");
 
         } catch (SQLException ex) {
-            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText("Look, an Information Dialog");
+            alert.setContentText("database not connected to server connect database and try again ");
+            alert.showAndWait();
             return false;
         }
 
         return true;
+    }
+
+    public boolean getState() {
+        return con != null;
     }
 
     public User getUserByName(String userName) {
@@ -46,7 +56,10 @@ public class DatabaseProcess {
                 user = new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setContentText("invalid data enterd in get userdata by name");
+            alert.showAndWait();
         }
         return user;
     }
@@ -64,7 +77,10 @@ public class DatabaseProcess {
                 return true;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setContentText("invalid data enterd in signin");
+            alert.showAndWait();
         }
         return false;
     }
@@ -95,7 +111,10 @@ public class DatabaseProcess {
                 return true;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setContentText("invalid data enterd in signup");
+            alert.showAndWait();
             return false;
 
         }

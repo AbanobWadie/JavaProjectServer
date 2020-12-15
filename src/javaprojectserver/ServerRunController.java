@@ -129,7 +129,7 @@ public class ServerRunController implements Initializable {
         stopServer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
+                stopServer.setDisable(true);
                 XoServer.closeServer();
                 System.exit(0);
             }

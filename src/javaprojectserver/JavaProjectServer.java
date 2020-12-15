@@ -37,7 +37,6 @@ public class JavaProjectServer extends Application {
         }
 
         Scene scene = new Scene(root);
-
         primaryStage.setTitle("Server GUI");
         primaryStage.setScene(scene);
         primaryStage.show();

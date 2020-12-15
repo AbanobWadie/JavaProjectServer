@@ -30,39 +30,36 @@ import javafx.stage.Stage;
  * @author Alshaimaa
  */
 public class StartServerController implements Initializable {
-    
-   
-     @FXML
-    Button btnStartServer;
-     
-      
+
     @FXML
-   private void startServer(ActionEvent event) {
-            
+    Button btnStartServer;
+
+    @FXML
+    private void startServer(ActionEvent event) {
+
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        btnStartServer.setOnAction(new EventHandler<ActionEvent>() {
 
-           btnStartServer.setOnAction(new EventHandler<ActionEvent>(){
-        
-          @Override
-          public void handle(ActionEvent e) {
-              try {
-                 Parent root = FXMLLoader.load(getClass().getResource("ServerRun.fxml"));
-                 Scene scene = new Scene(root);
-                 Stage stage=(Stage)((Node)e.getSource()).getScene().getWindow();
-                 stage.setScene(scene);
-                 stage.show();
-            } catch (IOException ex) {
-                Logger.getLogger(StartServerController.class.getName()).log(Level.SEVERE, null, ex);
+            @Override
+            public void handle(ActionEvent e) {
+                try {
+                    if (DatabaseProcess.init()) {
+                        Parent root = FXMLLoader.load(getClass().getResource("ServerRun.fxml"));
+                        Scene scene = new Scene(root);
+                        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                        stage.setScene(scene);
+                        stage.show();
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(StartServerController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-    }
-    });
-        
-        
-        // TODO
-    }  
+        });
 
-    
+        // TODO
+    }
+
 }

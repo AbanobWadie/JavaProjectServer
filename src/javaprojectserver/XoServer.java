@@ -150,16 +150,18 @@ public class XoServer {
                         db.updateUserAvailabelty(currentUser, false);
                         return;
                     }
+                    StringBuilder sb=new StringBuilder();
+                    sb.append("(online-list) ");
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
                             if (!db.isAvailable(st)) {
-                                out.append(st + "  (In-Game) ");
+                                sb.append(st).append(",(In-Game)");
                             } else {
-                                out.append(st + " ");
+                                sb.append(st).append(" ");
                             }
                         }
                     }
-                    out.println(" (online-list)");
+                    out.println(sb.toString());
                     out.flush();
                     try {
                         Thread.sleep(3000L);
@@ -245,7 +247,6 @@ public class XoServer {
                                             terminate.put(otherUser, "break");
                                             break;
                                         } else {
-
                                             otherOut.println(userOption);
                                             otherOut.flush();
                                         }
