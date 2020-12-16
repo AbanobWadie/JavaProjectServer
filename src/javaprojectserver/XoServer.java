@@ -142,14 +142,15 @@ public class XoServer {
                 PrintWriter otherOut;
                 BufferedReader otherIN;
                 while (runing) {
-                    String page = in.readLine();
-                    if (page == null || page.equals("exit")) {
+                  
+                    //String page = in.readLine();
+                    /*if (page == null || page.equals("exit")) {
                         userOut.remove(currentUser).close();
                         userIn.remove(currentUser).close();
                         db.updateUserState(currentUser, false);
                         db.updateUserAvailabelty(currentUser, false);
                         return;
-                    }
+                    }*/
                     StringBuilder sb = new StringBuilder();
                     sb.append("(online-list) ");
                     for (String st : db.getOnlineUsers()) {
@@ -163,11 +164,7 @@ public class XoServer {
                     }
                     out.println(sb.toString());
                     out.flush();
-                    try {
-                        Thread.sleep(3000L);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    
                     if (in.ready()) {
                         rule = in.readLine();
                         System.out.println(rule);
@@ -223,8 +220,10 @@ public class XoServer {
                                     out.flush();
                                     otherOut.flush();
                                     String userOption;
+                                    System.out.println("before");
                                     while (runing) {
                                         userOption = in.readLine();
+                                        System.out.println(userOption);
                                         if (userOption == null) {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                             terminate.put(otherUser, "break");
