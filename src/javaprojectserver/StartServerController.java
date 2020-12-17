@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -48,28 +49,49 @@ public class StartServerController implements Initializable {
             public void handle(ActionEvent e) {
                 btnStartServer.setDisable(true);
                 btnStartServer.setText("please wait......");
-                try {
 
-                    if (DatabaseProcess.init()) {
-                        Parent root = FXMLLoader.load(getClass().getResource("ServerRun.fxml"));
-                        Scene scene = new Scene(root);
-                        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-                        stage.setScene(scene);
-                        stage.show();
-                    } else {
-                        btnStartServer.setDisable(false);
-                        btnStartServer.setText("Start Server");
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Information Dialog");
-                        alert.setHeaderText("Look, an Information Dialog");
-                        alert.setContentText("database not connected to server connect database and try again ");
-                        alert.showAndWait();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
 
+                        if (DatabaseProcess.init()) {
+
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Parent root = FXMLLoader.load(getClass().getResource("ServerRun.fxml"));
+                                        Scene scene = new Scene(root);
+                                        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+                                        stage.setScene(scene);
+                                        stage.show();
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(StartServerController.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                }
+                            });
+
+                        } else {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnStartServer.setDisable(false);
+                                    btnStartServer.setText("Start Server");
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle("Information Dialog");
+                                    alert.setHeaderText("Look, an Information Dialog");
+                                    alert.setContentText("database not connected to server connect database and try again ");
+                                    alert.showAndWait();
+                                    btnStartServer.setDisable(false);
+                                    btnStartServer.setText("Start Server");
+                                }
+                            });
+
+                        }
                     }
-
-                } catch (IOException ex) {
-                    Logger.getLogger(StartServerController.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                ).start();
+
             }
         });
 
