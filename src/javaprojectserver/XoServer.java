@@ -39,7 +39,7 @@ public class XoServer {
     private static boolean runing = true;
 
     public XoServer() {
-        db.init();
+
         try {
             server = new ServerSocket(5005);
 
@@ -142,15 +142,8 @@ public class XoServer {
                 PrintWriter otherOut;
                 BufferedReader otherIN;
                 while (runing) {
-                  
-                    //String page = in.readLine();
-                    /*if (page == null || page.equals("exit")) {
-                        userOut.remove(currentUser).close();
-                        userIn.remove(currentUser).close();
-                        db.updateUserState(currentUser, false);
-                        db.updateUserAvailabelty(currentUser, false);
-                        return;
-                    }*/
+
+                    
                     StringBuilder sb = new StringBuilder();
                     sb.append("(online-list) ");
                     for (String st : db.getOnlineUsers()) {
@@ -164,21 +157,26 @@ public class XoServer {
                     }
                     out.println(sb.toString());
                     out.flush();
-                    
+
                     if (in.ready()) {
                         rule = in.readLine();
                         System.out.println(rule);
-                        if (rule == null) {
+                        if (rule == null || rule.equals("exit")) {
                             userOut.remove(currentUser).close();
                             userIn.remove(currentUser).close();
                             db.updateUserState(currentUser, false);
                             db.updateUserAvailabelty(currentUser, false);
                             return;
-                        }
-                        if (rule.equals("ok")) {
+                        } else if (rule.equals("history")) {
+                            out.println(db.getHistory(currentUser));
+                            out.flush();
+                        } else if (rule.equals("ok")) {
                             while (true) {
                                 if (terminate.containsKey(currentUser)) {
                                     if (terminate.remove(currentUser).equals("break")) {
+                                        userOut.put(currentUser, out);
+                                        userIn.put(currentUser, in);
+                                        db.updateUserAvailabelty(currentUser, true);
                                         break;
                                     } else {
                                         userOut.remove(currentUser).close();
@@ -189,12 +187,6 @@ public class XoServer {
                                     }
                                 }
                             }
-                        } else if (rule.equals("exit")) {
-                            userOut.remove(currentUser).close();
-                            userIn.remove(currentUser).close();
-                            db.updateUserState(currentUser, false);
-                            db.updateUserAvailabelty(currentUser, false);
-                            return;
                         } else if (rule.contains("play")) {
                             String st[] = rule.split(" ");
                             String otherUser = st[1];
@@ -214,7 +206,6 @@ public class XoServer {
                                     userIn.remove(currentUser);
                                     db.updateUserAvailabelty(otherUser, false);
                                     db.updateUserAvailabelty(currentUser, false);
-
                                     out.println("x");
                                     otherOut.println("o");
                                     out.flush();
@@ -224,9 +215,10 @@ public class XoServer {
                                     while (runing) {
                                         userOption = in.readLine();
                                         System.out.println(userOption);
-                                        if (userOption == null) {
+                                        if (userOption == null || userOption.equals("exit")) {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                             terminate.put(otherUser, "break");
+                                            db.saveGame(currentUser, otherUser, otherUser);
                                             otherOut.println("other player exit");
                                             otherOut.flush();
                                             return;
@@ -235,21 +227,18 @@ public class XoServer {
                                             otherOut.flush();
                                             db.updateScore(db.getScore(currentUser) + 10, currentUser);
                                             terminate.put(otherUser, "break");
+                                            db.saveGame(currentUser, otherUser, currentUser);
                                             break;
                                         } else if (userOption.equals("back")) {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                             terminate.put(otherUser, "break");
+                                            db.saveGame(currentUser, otherUser, otherUser);
                                             otherOut.println("other player exit");
                                             otherOut.flush();
                                             break;
-                                        } else if (userOption.equals("exit")) {
-                                            db.updateScore(db.getScore(otherUser) + 10, otherUser);
-                                            terminate.put(otherUser, "break");
-                                            otherOut.println("other player exit");
-                                            otherOut.flush();
-                                            return;
                                         } else if (userOption.equals("draw")) {
                                             terminate.put(otherUser, "break");
+                                            db.saveGame(currentUser, otherUser, "draw");
                                             break;
                                         } else {
                                             otherOut.println(userOption);
@@ -257,27 +246,29 @@ public class XoServer {
                                         }
 
                                         userOption = otherIN.readLine();
-                                        if (userOption == null) {
-                                            terminate.put(otherUser, "return");
-                                            break;
+                                        if (userOption == null || userOption.equals("exit")) {
+                                            db.updateScore(db.getScore(currentUser) + 10, currentUser);
+                                            terminate.put(otherUser, "retrun");
+                                            db.saveGame(currentUser, otherUser, currentUser);
+                                            out.println("other player exit");
+                                            out.flush();
+                                            return;
                                         } else if (userOption.contains("win")) {
                                             out.println(userOption.replace("win", ""));
                                             out.flush();
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
+                                            db.saveGame(currentUser, otherUser, otherUser);
+
                                             terminate.put(otherUser, "break");
                                             break;
                                         } else if (userOption.equals("back")) {
                                             db.updateScore(db.getScore(currentUser) + 10, currentUser);
+                                            db.saveGame(currentUser, otherUser, currentUser);
                                             terminate.put(otherUser, "break");
                                             break;
-                                        } else if (userOption.equals("exit")) {
-                                            db.updateScore(db.getScore(currentUser) + 10, currentUser);
-                                            terminate.put(otherUser, "return");
-                                            otherOut.println("other player exit");
-                                            otherOut.flush();
-                                            return;
                                         } else if (userOption.equals("draw")) {
                                             terminate.put(otherUser, "break");
+                                            db.saveGame(currentUser, otherUser, "draw");
                                             break;
                                         } else {
                                             out.println(userOption);
@@ -285,11 +276,8 @@ public class XoServer {
                                         }
 
                                     }
-                                    userOut.put(otherUser, otherOut);
-                                    userIn.put(otherUser, otherIN);
                                     userOut.put(currentUser, out);
                                     userIn.put(currentUser, in);
-                                    db.updateUserAvailabelty(otherUser, true);
                                     db.updateUserAvailabelty(currentUser, true);
                                 } else {
                                     out.println("no");
@@ -342,22 +330,20 @@ public class XoServer {
 
     public static void closeServer() {
 
-        runing = false;
+        if (server!=null) {
+            runing = false;
+           
+            for (String s : userIn.keySet()) {
+                userOut.remove(s).close();
+                try {
+                    userIn.remove(s).close();
 
-        for (String s : userIn.keySet()) {
-            userOut.remove(s).close();
-            try {
-                userIn.remove(s).close();
-            } catch (IOException ex) {
-                Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
-
-        }
-        for (String s : db.getOnlineUsers()) {
-            db.updateUserAvailabelty(s, false);
-            db.updateUserAvailabelty(s, false);
-            db.updateUserState(s, false);
-            db.updateUserState(s, false);
+            db.setAllUserOffline();
         }
     }
 }

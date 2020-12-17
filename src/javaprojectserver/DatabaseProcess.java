@@ -25,14 +25,9 @@ public class DatabaseProcess {
     public static boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
-
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "a", "a");
         } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText("Look, an Information Dialog");
-            alert.setContentText("database not connected to server connect database and try again ");
-            alert.showAndWait();
+
             return false;
         }
 
@@ -278,4 +273,54 @@ public class DatabaseProcess {
         return false;
     }
 
+    public void setAllUserOffline() {
+        PreparedStatement pst;
+        try {
+            pst = con.prepareStatement("UPDATE USERDATA SET AVAILABLE = ? ,STATE = ?");
+            pst.setBoolean(1, false);
+            pst.setBoolean(2, false);
+            pst.execute();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+
+        }
+
+    }
+
+    public String getHistory(String user) {
+        StringBuilder sb = new StringBuilder();
+        ResultSet rs;
+        PreparedStatement pst;
+        try {
+            pst = con.prepareStatement("select PLAYER1,PLAYER2,WINNER from HISTORY where PLAYER1 = ? OR PLAYER2 = ?");
+            pst.setString(1, user);
+            pst.setString(2, user);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                sb.append(rs.getString(1)).append(" ").append(rs.getString(2)).append(" ").append(rs.getString(3)).append(",");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sb.toString();
+    }
+
+    public void saveGame(String player1, String player2, String winner) {
+        PreparedStatement pst;
+        try {
+            pst = con.prepareStatement("Insert Into USERDATA (PLAYER1, PLAYER2, WINNER) VALUES (?,?,?)");
+            pst.setString(1, player1);
+            pst.setString(2, player2);
+            pst.setString(3, winner);
+            pst.execute();
+
+        } catch (SQLException ex) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setContentText("invalid data enterd in data");
+            alert.showAndWait();
+
+        }
+    }
 }
