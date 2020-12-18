@@ -27,7 +27,6 @@ public class DatabaseProcess {
             DriverManager.registerDriver(new ClientDriver());
             con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
         } catch (SQLException ex) {
-
             return false;
         }
 
@@ -51,10 +50,7 @@ public class DatabaseProcess {
                 user = new User(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4));
             }
         } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setContentText("invalid data enterd in get userdata by name");
-            alert.showAndWait();
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return user;
     }
@@ -72,18 +68,15 @@ public class DatabaseProcess {
                 return true;
             }
         } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setContentText("invalid data enterd in signin");
-            alert.showAndWait();
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
 
     public boolean SignUp(String userName, String password) {
-        PreparedStatement pst;
-        ResultSet rs;
         try {
+            PreparedStatement pst;
+            ResultSet rs;
 
             pst = con.prepareStatement("select * from USERDATA where USERNAME = ?");
             pst.setString(1, userName);
@@ -105,13 +98,9 @@ public class DatabaseProcess {
                 }
                 return true;
             }
-        } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setContentText("invalid data enterd in signup");
-            alert.showAndWait();
-            return false;
 
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -307,20 +296,17 @@ public class DatabaseProcess {
     }
 
     public void saveGame(String player1, String player2, String winner) {
-        PreparedStatement pst;
         try {
-            pst = con.prepareStatement("Insert Into USERDATA (PLAYER1, PLAYER2, WINNER) VALUES (?,?,?)");
+            PreparedStatement pst;
+
+            pst = con.prepareStatement("Insert Into HISTORY (PLAYER1, PLAYER2, WINNER) VALUES (?,?,?)");
             pst.setString(1, player1);
             pst.setString(2, player2);
             pst.setString(3, winner);
             pst.execute();
-
         } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setContentText("invalid data enterd in data");
-            alert.showAndWait();
-
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 }
