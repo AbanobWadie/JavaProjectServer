@@ -179,8 +179,6 @@ public class XoServer {
                                         db.updateUserAvailabelty(currentUser, true);
                                         break;
                                     } else {
-                                        userOut.remove(currentUser).close();
-                                        userIn.remove(currentUser).close();
                                         db.updateUserState(currentUser, false);
                                         db.updateUserAvailabelty(currentUser, false);
                                         return;
@@ -218,27 +216,25 @@ public class XoServer {
                                         if (userOption == null || userOption.equals("exit")) {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                             terminate.put(otherUser, "break");
-                                            db.saveGame(currentUser, otherUser, otherUser);
+                                            //db.saveGame(currentUser, otherUser, otherUser);
                                             otherOut.println("other player exit");
                                             otherOut.flush();
                                             return;
-                                        } else if (userOption.contains("win")) {
-                                            otherOut.println(userOption.replace("win", ""));
-                                            otherOut.flush();
+                                        } else if (userOption.equals("win")) {
                                             db.updateScore(db.getScore(currentUser) + 10, currentUser);
                                             terminate.put(otherUser, "break");
-                                            db.saveGame(currentUser, otherUser, currentUser);
+                                            //db.saveGame(currentUser, otherUser, currentUser);
                                             break;
                                         } else if (userOption.equals("back")) {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                             terminate.put(otherUser, "break");
-                                            db.saveGame(currentUser, otherUser, otherUser);
+                                            //db.saveGame(currentUser, otherUser, otherUser);
                                             otherOut.println("other player exit");
                                             otherOut.flush();
                                             break;
                                         } else if (userOption.equals("draw")) {
                                             terminate.put(otherUser, "break");
-                                            db.saveGame(currentUser, otherUser, "draw");
+                                            //db.saveGame(currentUser, otherUser, "draw");
                                             break;
                                         } else {
                                             otherOut.println(userOption);
@@ -249,26 +245,24 @@ public class XoServer {
                                         if (userOption == null || userOption.equals("exit")) {
                                             db.updateScore(db.getScore(currentUser) + 10, currentUser);
                                             terminate.put(otherUser, "retrun");
-                                            db.saveGame(currentUser, otherUser, currentUser);
+                                            //db.saveGame(currentUser, otherUser, currentUser);
                                             out.println("other player exit");
                                             out.flush();
                                             return;
-                                        } else if (userOption.contains("win")) {
-                                            out.println(userOption.replace("win", ""));
-                                            out.flush();
+                                        } else if (userOption.equals("win")) {
                                             db.updateScore(db.getScore(otherUser) + 10, otherUser);
-                                            db.saveGame(currentUser, otherUser, otherUser);
+                                            //db.saveGame(currentUser, otherUser, otherUser);
 
                                             terminate.put(otherUser, "break");
                                             break;
                                         } else if (userOption.equals("back")) {
                                             db.updateScore(db.getScore(currentUser) + 10, currentUser);
-                                            db.saveGame(currentUser, otherUser, currentUser);
+                                            //db.saveGame(currentUser, otherUser, currentUser);
                                             terminate.put(otherUser, "break");
                                             break;
                                         } else if (userOption.equals("draw")) {
                                             terminate.put(otherUser, "break");
-                                            db.saveGame(currentUser, otherUser, "draw");
+                                            //db.saveGame(currentUser, otherUser, "draw");
                                             break;
                                         } else {
                                             out.println(userOption);
