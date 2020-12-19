@@ -22,10 +22,10 @@ public class DatabaseProcess {
     private ResultSet rsid;
     private static Connection con;
 
-    public static boolean init() {
+    public synchronized static boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "a", "a");
         } catch (SQLException ex) {
             return false;
         }
@@ -33,11 +33,11 @@ public class DatabaseProcess {
         return true;
     }
 
-    public boolean getState() {
+    public synchronized boolean getState() {
         return con != null;
     }
 
-    public User getUserByName(String userName) {
+    public synchronized User getUserByName(String userName) {
         User user = null;
         PreparedStatement pst;
         ResultSet rs;
@@ -55,7 +55,7 @@ public class DatabaseProcess {
         return user;
     }
 
-    public boolean SignIn(String userName, String password) {
+    public synchronized boolean SignIn(String userName, String password) {
         PreparedStatement pst;
         ResultSet rs;
         try {
@@ -73,7 +73,7 @@ public class DatabaseProcess {
         return false;
     }
 
-    public boolean SignUp(String userName, String password) {
+    public synchronized boolean SignUp(String userName, String password) {
         try {
             PreparedStatement pst;
             ResultSet rs;
@@ -105,7 +105,7 @@ public class DatabaseProcess {
         return false;
     }
 
-    public int getScore(String userName) {
+    public synchronized int getScore(String userName) {
         PreparedStatement pst;
         ResultSet rs;
         try {
@@ -122,7 +122,7 @@ public class DatabaseProcess {
         return -1;
     }
 
-    public boolean updateScore(int newScore, String userName) {
+    public synchronized boolean updateScore(int newScore, String userName) {
 
         PreparedStatement pst;
         try {
@@ -138,7 +138,7 @@ public class DatabaseProcess {
         return false;
     }
 
-    public ArrayList<String> getOnlineUsers() {
+    public synchronized ArrayList<String> getOnlineUsers() {
         ArrayList<String> arr = new ArrayList<>();
         ResultSet rs;
         PreparedStatement pst;
@@ -155,7 +155,7 @@ public class DatabaseProcess {
         return arr;
     }
 
-    public ArrayList<String> getOfflineUsers() {
+    public synchronized ArrayList<String> getOfflineUsers() {
         ArrayList<String> arr = new ArrayList<>();
         ResultSet rs;
         PreparedStatement pst;
@@ -173,7 +173,7 @@ public class DatabaseProcess {
         return arr;
     }
 
-    public ArrayList<String> getActiveUsers() {
+    public synchronized ArrayList<String> getActiveUsers() {
         ArrayList<String> arr = new ArrayList<>();
         ResultSet rs;
         PreparedStatement pst;
@@ -191,7 +191,7 @@ public class DatabaseProcess {
         return arr;
     }
 
-    public boolean updateUserState(String USERNAME, boolean STATE) {
+    public  synchronized boolean updateUserState(String USERNAME, boolean STATE) {
 
         PreparedStatement pst;
         try {
@@ -207,7 +207,7 @@ public class DatabaseProcess {
         return false;
     }
 
-    public boolean updateUserAvailabelty(String USERNAME, boolean AVAILABLE) {
+    public synchronized boolean updateUserAvailabelty(String USERNAME, boolean AVAILABLE) {
 
         PreparedStatement pst;
         try {
@@ -223,7 +223,7 @@ public class DatabaseProcess {
         return false;
     }
 
-    public boolean updatePassword(String USERNAME, String Password) {
+    public synchronized boolean updatePassword(String USERNAME, String Password) {
 
         PreparedStatement pst;
         ResultSet rs;
@@ -245,7 +245,7 @@ public class DatabaseProcess {
         return false;
     }
 
-    public boolean isAvailable(String userName) {
+    public synchronized boolean isAvailable(String userName) {
         PreparedStatement pst;
         ResultSet rs;
         try {
@@ -261,8 +261,25 @@ public class DatabaseProcess {
 
         return false;
     }
+    
+     public synchronized boolean isOnline(String userName) {
+        PreparedStatement pst;
+        ResultSet rs;
+        try {
+            pst = con.prepareStatement("select STATE from USERDATA where USERNAME = ?");
+            pst.setString(1, userName);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getBoolean(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-    public void setAllUserOffline() {
+        return false;
+    }
+
+    public synchronized void setAllUserOffline() {
         PreparedStatement pst;
         try {
             pst = con.prepareStatement("UPDATE USERDATA SET AVAILABLE = ? ,STATE = ?");
@@ -277,7 +294,7 @@ public class DatabaseProcess {
 
     }
 
-    public String getHistory(String user) {
+    public synchronized String getHistory(String user) {
         StringBuilder sb = new StringBuilder();
         ResultSet rs;
         PreparedStatement pst;
@@ -295,7 +312,7 @@ public class DatabaseProcess {
         return sb.toString();
     }
 
-    public void saveGame(String player1, String player2, String winner) {
+    public synchronized void saveGame(String player1, String player2, String winner) {
         try {
             PreparedStatement pst;
 
