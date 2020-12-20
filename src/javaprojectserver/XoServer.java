@@ -170,7 +170,7 @@ public class XoServer {
                             System.out.println("sss");
                             return;
                         } else if (rule.equals("history")) {
-                            out.println("history " + db.getHistory(currentUser));
+                            out.println("history" + db.getHistory(currentUser));
                             out.flush();
                         } else if (rule.contains("ok")) {
                             while (true) {

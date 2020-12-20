@@ -304,7 +304,7 @@ public class DatabaseProcess {
             pst.setString(2, user);
             rs = pst.executeQuery();
             while (rs.next()) {
-                sb.append(rs.getString(1)).append(" ").append(rs.getString(2)).append(" ").append(rs.getString(3)).append(",");
+                sb.append(",").append(rs.getString(1)).append(" ").append(rs.getString(2)).append(" ").append(rs.getString(3));
             }
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
