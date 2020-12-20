@@ -103,12 +103,12 @@ public class XoServer {
                                     out.flush();
                                     break;
                                 } else {
-                                    out.println("false acouunt is singed in");
+                                    out.println("false Acouunt is already singed in");
                                     out.flush();
                                 }
 
                             } else {
-                                out.println("false you are not singup");
+                                out.println("false Wrong username or password");
                                 out.flush();
                             }
                         } else if (req.equals("singup")) {
@@ -124,7 +124,6 @@ public class XoServer {
                             if (db.updatePassword(currentUser, password)) {
                                 out.println("true");
                                 out.flush();
-                                break;
                             } else {
                                 out.println("false");
                                 out.flush();
@@ -171,7 +170,7 @@ public class XoServer {
                             System.out.println("sss");
                             return;
                         } else if (rule.equals("history")) {
-                            out.println(db.getHistory(currentUser));
+                            out.println("history " + db.getHistory(currentUser));
                             out.flush();
                         } else if (rule.contains("ok")) {
                             while (true) {
