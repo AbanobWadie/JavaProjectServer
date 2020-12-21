@@ -60,6 +60,7 @@ public class StartServerController implements Initializable {
                                 @Override
                                 public void run() {
                                     try {
+                                        XoServer.startServer();
                                         Parent root = FXMLLoader.load(getClass().getResource("ServerRun.fxml"));
                                         Scene scene = new Scene(root);
                                         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
