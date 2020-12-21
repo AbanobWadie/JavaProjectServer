@@ -56,23 +56,23 @@ public class XoServer {
             public void run() {
                 while (runing) {
                     try {
-                       
-                            Socket ss = server.accept();
-                            new Thread(new clientHandler(ss)).start();
-                        
+
+                        Socket ss = server.accept();
+                        new Thread(new clientHandler(ss)).start();
+
                     } catch (IOException e) {
-                       Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {  
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                    alert.setTitle("Information Dialog");
-                                    alert.setHeaderText("Look, an Information Dialog");
-                                    alert.setContentText("force close server may case problem wirh users");
-                                    alert.showAndWait();
-                                    
-                                }
-                            });
-                                  
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle("Information Dialog");
+                                alert.setHeaderText("Look, an Information Dialog");
+                                alert.setContentText("force close server may case problem wirh users");
+                                alert.showAndWait();
+
+                            }
+                        });
+
                     }
                 }
             }
@@ -185,7 +185,7 @@ public class XoServer {
                                 if (terminate.containsKey(currentUser)) {
                                     String s = terminate.get(currentUser);
                                     terminate.remove(currentUser);
-                                    if (s.equals("exit")) {
+                                    if (s.equals("return")) {
                                         out.close();
                                         in.close();
                                         db.updateUserState(currentUser, false);
@@ -223,7 +223,8 @@ public class XoServer {
                                         db.updateUserState(otherUser, false);
                                         out.println("no");
                                         out.flush();
-
+                                        out.println("no");
+                                        out.flush();
                                     } else if (rule.equals("ok")) {
                                         userOut.remove(otherUser);
                                         userIn.remove(otherUser);
@@ -283,7 +284,7 @@ public class XoServer {
                                                 userOption = otherIN.readLine();
                                                 if (userOption == null || userOption.equals("exit")) {
                                                     db.updateScore(db.getScore(currentUser) + 10, currentUser);
-                                                    terminate.put(otherUser, "retrun");
+                                                    terminate.put(otherUser, "return");
                                                     db.saveGame(currentUser, otherUser, currentUser);
                                                     otherOut.println("other player exit");
                                                     otherOut.flush();
@@ -307,7 +308,6 @@ public class XoServer {
                                                     otherOut.flush();
                                                     out.println("other player exit");
                                                     out.flush();
-
                                                     break;
                                                 } else if (userOption.equals("draw")) {
                                                     terminate.put(otherUser, "break");
@@ -330,6 +330,7 @@ public class XoServer {
                                     } else {
                                         out.println("no");
                                         out.flush();
+                                        
                                     }
 
                                 }
