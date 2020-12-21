@@ -129,9 +129,17 @@ public class ServerRunController implements Initializable {
         stopServer.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                stopServer.setDisable(true);
-                XoServer.closeServer();
-                System.exit(0);
+                try {
+                    stopServer.setDisable(true);
+                    XoServer.closeServer();
+                    Parent root = FXMLLoader.load(getClass().getResource("StartServer.fxml"));
+                    Scene scene = new Scene(root);
+                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    stage.setScene(scene);
+                    stage.show();
+                } catch (IOException ex) {
+                    Logger.getLogger(ServerRunController.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 

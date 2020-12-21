@@ -26,6 +26,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 
 /**
  *
@@ -54,12 +56,23 @@ public class XoServer {
             public void run() {
                 while (runing) {
                     try {
-                        Socket ss = server.accept();
-                        new Thread(new clientHandler(ss)).start();
-                        System.out.println(ss.getPort());
-
+                       
+                            Socket ss = server.accept();
+                            new Thread(new clientHandler(ss)).start();
+                        
                     } catch (IOException e) {
-                        Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, e);
+                       Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {  
+                                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                    alert.setTitle("Information Dialog");
+                                    alert.setHeaderText("Look, an Information Dialog");
+                                    alert.setContentText("force close server may case problem wirh users");
+                                    alert.showAndWait();
+                                    
+                                }
+                            });
+                                  
                     }
                 }
             }
@@ -95,7 +108,6 @@ public class XoServer {
                     if (st.hasMoreTokens()) {
                         currentUser = st.nextToken();
                         password = st.nextToken();
-                        System.out.println(request);
                         if (req.equals("singin")) {
                             if (db.SignIn(currentUser, password)) {
                                 if (!db.isOnline(currentUser)) {
@@ -136,7 +148,6 @@ public class XoServer {
                     }
 
                 }
-                System.out.println("ana");
                 userOut.put(currentUser, out);
                 userIn.put(currentUser, in);
                 db.updateUserAvailabelty(currentUser, true);
@@ -147,7 +158,6 @@ public class XoServer {
 
                     StringBuilder sb = new StringBuilder();
                     sb.append("(online-list) ");
-                    System.out.println("send list for" + currentUser);
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
                             if (!db.isAvailable(st)) {
@@ -162,13 +172,11 @@ public class XoServer {
 
                     if (in.ready()) {
                         rule = in.readLine();
-                        System.out.println(rule + "llllll" + currentUser);
                         if (rule == null || rule.equals("exit")) {
                             out.close();
                             out.close();
                             db.updateUserState(currentUser, false);
                             db.updateUserAvailabelty(currentUser, false);
-                            System.out.println("sss");
                             return;
                         } else if (rule.equals("history")) {
                             out.println(db.getHistory(currentUser));
@@ -176,7 +184,6 @@ public class XoServer {
                         } else if (rule.contains("ok")) {
                             while (true) {
                                 if (terminate.containsKey(currentUser)) {
-                                    System.out.println("lllll");
                                     String s = terminate.get(currentUser);
                                     terminate.remove(currentUser);
                                     if (s.equals("exit")) {
@@ -186,7 +193,6 @@ public class XoServer {
                                         db.updateUserAvailabelty(currentUser, false);
                                         return;
                                     } else {
-                                        System.out.println("break" + "" + currentUser);
                                         userOut.put(currentUser, out);
                                         userIn.put(currentUser, in);
 
@@ -204,13 +210,10 @@ public class XoServer {
                             String st[] = rule.split(" ");
                             if (st.length > 1) {
                                 String otherUser = st[1];
-                                System.out.println(otherUser);
                                 if (userOut.containsKey(otherUser)) {
-                                    System.out.println(otherUser);
                                     otherOut = userOut.get(otherUser);
                                     otherIN = userIn.get(otherUser);
                                     otherOut.println("play request from " + currentUser);
-                                    System.out.println("hi");
                                     otherOut.flush();
                                     rule = otherIN.readLine();
                                     if (rule == null || rule.equals("exit")) {
@@ -234,7 +237,6 @@ public class XoServer {
                                         out.flush();
                                         otherOut.flush();
                                         String userOption;
-                                        System.out.println("before");
                                         while (runing) {
                                             if (in.ready()) {
                                                 userOption = in.readLine();
@@ -246,13 +248,11 @@ public class XoServer {
                                                     otherOut.flush();
                                                     out.println("other player exit");
                                                     out.flush();
-                                                    System.out.println("exit" + currentUser);
                                                     return;
                                                 } else if (userOption.equals("win")) {
                                                     db.updateScore(db.getScore(currentUser) + 10, currentUser);
                                                     terminate.put(otherUser, "break");
                                                     db.saveGame(currentUser, otherUser, currentUser);
-                                                    System.out.println("win" + currentUser);
                                                     otherOut.println("other player exit");
                                                     otherOut.flush();
                                                     out.println("other player exit");
@@ -286,7 +286,6 @@ public class XoServer {
                                                     db.updateScore(db.getScore(currentUser) + 10, currentUser);
                                                     terminate.put(otherUser, "retrun");
                                                     db.saveGame(currentUser, otherUser, currentUser);
-                                                    System.out.println("otherExit" + currentUser);
                                                     otherOut.println("other player exit");
                                                     otherOut.flush();
                                                     out.println("other player exit");
@@ -296,7 +295,6 @@ public class XoServer {
                                                     db.updateScore(db.getScore(otherUser) + 10, otherUser);
                                                     db.saveGame(currentUser, otherUser, otherUser);
                                                     terminate.put(otherUser, "break");
-                                                    System.out.println("otherWin" + currentUser);
                                                     otherOut.println("other player exit");
                                                     otherOut.flush();
                                                     out.println("other player exit");
@@ -310,13 +308,11 @@ public class XoServer {
                                                     otherOut.flush();
                                                     out.println("other player exit");
                                                     out.flush();
-                                                    System.out.println("otherBack" + currentUser);
 
                                                     break;
                                                 } else if (userOption.equals("draw")) {
                                                     terminate.put(otherUser, "break");
                                                     db.saveGame(currentUser, otherUser, "draw");
-                                                    System.out.println("otherDraw" + otherUser);
                                                     otherOut.println("other player exit");
                                                     otherOut.flush();
                                                     out.println("other player exit");
@@ -367,14 +363,22 @@ public class XoServer {
     public static void closeServer() {
 
         if (server != null) {
-            runing = false;
-
             try {
+                runing = false;
                 server.close();
+                for (String s : userIn.keySet()) {
+                    userIn.remove(s).close();
+                    userOut.remove(s).close();
+                }
+
+                db.setAllUserOffline();
             } catch (IOException ex) {
                 Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            db.setAllUserOffline();
         }
+    }
+
+    public static void startServer() {
+        runing = true;
     }
 }
