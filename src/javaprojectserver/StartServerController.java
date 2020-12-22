@@ -63,6 +63,7 @@ public class StartServerController implements Initializable {
                                         XoServer.startServer();
                                         Parent root = FXMLLoader.load(getClass().getResource("ServerRun.fxml"));
                                         Scene scene = new Scene(root);
+                                        scene.getStylesheets().add("/CSS/Project.css");
                                         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
                                         stage.setScene(scene);
                                         stage.show();
