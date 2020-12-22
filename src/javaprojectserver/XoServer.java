@@ -77,8 +77,8 @@ public class XoServer {
         }).start();
 
     }
-    
-   public static XoServer getInstance() {
+
+    public static XoServer getInstance() {
         if (instance == null) {
             return new XoServer();
         }
@@ -173,11 +173,7 @@ public class XoServer {
                     }
                     out.println(sb.toString());
                     out.flush();
-                    try {
-                        Thread.sleep(1000l);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                   
                     if (in.ready()) {
                         rule = in.readLine();
                         if (rule == null || rule.equals("exit")) {
