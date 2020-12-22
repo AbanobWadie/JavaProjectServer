@@ -25,7 +25,7 @@ public class DatabaseProcess {
     public synchronized static boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/m", "a", "a");
         } catch (SQLException ex) {
             return false;
         }

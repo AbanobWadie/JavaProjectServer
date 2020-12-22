@@ -216,7 +216,6 @@ public class XoServer {
                                     otherOut.flush();
                                     rule = otherIN.readLine();
                                     if (rule == null || rule.equals("exit")) {
-
                                         userOut.remove(otherUser).close();
                                         userIn.remove(otherUser).close();
                                         db.updateUserAvailabelty(otherUser, false);
@@ -326,11 +325,10 @@ public class XoServer {
                                         userOut.put(currentUser, out);
                                         userIn.put(currentUser, in);
                                         db.updateUserAvailabelty(currentUser, true);
-
                                     } else {
                                         out.println("no");
                                         out.flush();
-                                        
+
                                     }
 
                                 }
