@@ -32,13 +32,14 @@ import javafx.scene.control.Alert;
 public class XoServer {
 
     private static ServerSocket server;
+    private static XoServer instance;
     public volatile static DatabaseProcess db;
     private static volatile ConcurrentHashMap<String, PrintWriter> userOut = new ConcurrentHashMap<>();
     private static volatile ConcurrentHashMap<String, BufferedReader> userIn = new ConcurrentHashMap<>();
     private static volatile ConcurrentHashMap<String, String> terminate = new ConcurrentHashMap<>();
     private static volatile boolean runing = true;
 
-    public XoServer() {
+    private XoServer() {
         db = DatabaseProcess.getInstance();
         try {
 
@@ -75,6 +76,13 @@ public class XoServer {
             }
         }).start();
 
+    }
+    
+   public static XoServer getInstance() {
+        if (instance == null) {
+            return new XoServer();
+        }
+        return instance;
     }
 
     class clientHandler implements Runnable {
@@ -165,7 +173,11 @@ public class XoServer {
                     }
                     out.println(sb.toString());
                     out.flush();
-
+                    try {
+                        Thread.sleep(1000l);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     if (in.ready()) {
                         rule = in.readLine();
                         if (rule == null || rule.equals("exit")) {
@@ -196,6 +208,11 @@ public class XoServer {
                                     }
                                 }
 
+                            }
+                            try {
+                                Thread.sleep(1000l);
+                            } catch (InterruptedException ex) {
+                                Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else if (rule.contains("play")) {
                             String st[] = rule.split(" ");

@@ -76,7 +76,7 @@ public class ServerRunController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        XoServer server = new XoServer();
+        XoServer server = XoServer.getInstance();
         ipText.setText(server.getIP());
         String style = pieChart.getStyle();
         pieChart.setMaxSize(800, 800);
