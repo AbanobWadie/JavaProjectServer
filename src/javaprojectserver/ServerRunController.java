@@ -79,7 +79,6 @@ public class ServerRunController implements Initializable {
         XoServer server = new XoServer();
         ipText.setText(server.getIP());
         String style = pieChart.getStyle();
-        pieChart.setTitle("Chart show Active,Online And Offline Users ");
         pieChart.setMaxSize(800, 800);
         pieChart.setLabelLineLength(10);
         pieChart.setLegendSide(Side.LEFT);
