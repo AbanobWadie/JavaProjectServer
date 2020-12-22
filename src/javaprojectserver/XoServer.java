@@ -36,15 +36,16 @@ import javafx.scene.control.Alert;
 public class XoServer {
 
     private static ServerSocket server;
-    public volatile static DatabaseProcess db = new DatabaseProcess();
+    public volatile static DatabaseProcess db;
     private static volatile ConcurrentHashMap<String, PrintWriter> userOut = new ConcurrentHashMap<>();
     private static volatile ConcurrentHashMap<String, BufferedReader> userIn = new ConcurrentHashMap<>();
     private static volatile ConcurrentHashMap<String, String> terminate = new ConcurrentHashMap<>();
     private static volatile boolean runing = true;
 
     public XoServer() {
-
+        db = DatabaseProcess.getInstance();
         try {
+
             server = new ServerSocket(5005);
 
         } catch (IOException ex) {
@@ -160,7 +161,7 @@ public class XoServer {
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
                             if (!db.isAvailable(st)) {
-                                sb.append(st).append(",(In-Game)");
+                                sb.append(st).append(",(In-Game) ");
                             } else {
                                 sb.append(st).append(" ");
                             }
@@ -194,16 +195,11 @@ public class XoServer {
                                     } else {
                                         userOut.put(currentUser, out);
                                         userIn.put(currentUser, in);
-
                                         db.updateUserAvailabelty(currentUser, true);
                                         break;
                                     }
                                 }
-                                try {
-                                    Thread.sleep(2000l);
-                                } catch (InterruptedException ex) {
-                                    Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
-                                }
+
                             }
                         } else if (rule.contains("play")) {
                             String st[] = rule.split(" ");
@@ -220,8 +216,6 @@ public class XoServer {
                                         userIn.remove(otherUser).close();
                                         db.updateUserAvailabelty(otherUser, false);
                                         db.updateUserState(otherUser, false);
-                                        out.println("no");
-                                        out.flush();
                                         out.println("no");
                                         out.flush();
                                     } else if (rule.equals("ok")) {
@@ -325,14 +319,18 @@ public class XoServer {
                                         userOut.put(currentUser, out);
                                         userIn.put(currentUser, in);
                                         db.updateUserAvailabelty(currentUser, true);
-                                    } else {
-                                        out.println("no");
-                                        out.flush();
-
                                     }
 
                                 }
                             }
+                        } else if (rule.contains("save")) {
+                            db.saveRecord(currentUser, rule.substring(4));
+                        } else if (rule.contains("records")) {
+
+                        } else {
+                            out.println("no");
+                            out.flush();
+                            
                         }
                     }
 

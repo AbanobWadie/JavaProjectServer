@@ -21,12 +21,23 @@ public class DatabaseProcess {
 
     private ResultSet rsid;
     private static Connection con;
+    private static DatabaseProcess db;
+
+    private DatabaseProcess() {
+    }
+
+    public static DatabaseProcess getInstance() {
+        if (db == null) {
+            return new DatabaseProcess();
+        }
+        return db;
+    }
 
     public synchronized static boolean init() {
         try {
             DriverManager.registerDriver(new ClientDriver());
 
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "a", "a");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/m", "a", "a");
 
         } catch (SQLException ex) {
             return false;
@@ -193,7 +204,7 @@ public class DatabaseProcess {
         return arr;
     }
 
-    public  synchronized boolean updateUserState(String USERNAME, boolean STATE) {
+    public synchronized boolean updateUserState(String USERNAME, boolean STATE) {
 
         PreparedStatement pst;
         try {
@@ -263,8 +274,8 @@ public class DatabaseProcess {
 
         return false;
     }
-    
-     public synchronized boolean isOnline(String userName) {
+
+    public synchronized boolean isOnline(String userName) {
         PreparedStatement pst;
         ResultSet rs;
         try {
@@ -322,6 +333,19 @@ public class DatabaseProcess {
             pst.setString(1, player1);
             pst.setString(2, player2);
             pst.setString(3, winner);
+            pst.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    public synchronized void saveRecord(String Player, String RECORD) {
+        try {
+            PreparedStatement pst;
+
+            pst = con.prepareStatement("Insert Into RECORDS (USERNAME, RECORD) VALUES (?,?)");
+            pst.setString(1, Player);
+            pst.setString(2, RECORD);
             pst.execute();
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
