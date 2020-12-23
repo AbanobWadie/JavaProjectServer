@@ -37,7 +37,7 @@ public class DatabaseProcess {
         try {
             DriverManager.registerDriver(new ClientDriver());
 
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/m", "a", "a");
+            con = DriverManager.getConnection("jdbc:derby://localhost:1527/UserData", "xo", "xo");
 
         } catch (SQLException ex) {
             return false;
@@ -361,11 +361,13 @@ public class DatabaseProcess {
              pst.setString(1, Player);
              ResultSet rs =pst.executeQuery();
              while(rs.next()){
-              sb.append(rs.getString(1));
+              sb.append(rs.getString(1) + ",");
              }
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
-       return sb.toString();
+
+            return sb.toString();
+        
     }
 }

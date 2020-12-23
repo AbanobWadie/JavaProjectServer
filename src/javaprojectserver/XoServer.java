@@ -165,15 +165,14 @@ public class XoServer {
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
                             if (!db.isAvailable(st)) {
-                                sb.append(st).append(",+").append(db.getScore(st)).append(",(In-Game) ");
+                                sb.append(st).append(",").append("Score:").append(db.getScore(st)).append(",(In-Game) ");
                             } else {
-                                sb.append(st).append(" ");
+                                sb.append(st).append(",").append("Score:").append(db.getScore(st)).append(" ");
                             }
                         }
                     }
+                    sb.append("score|" + currentUser + "|" + db.getScore(currentUser));
                     out.println(sb.toString());
-                    out.flush();
-                    out.println(db.getScore(currentUser));
                     out.flush();
                     if (in.ready()) {
                         rule = in.readLine();
@@ -235,8 +234,8 @@ public class XoServer {
                                         userIn.remove(currentUser);
                                         db.updateUserAvailabelty(otherUser, false);
                                         db.updateUserAvailabelty(currentUser, false);
-                                        out.println("x");
-                                        otherOut.println("o");
+                                        out.println("playx " + db.getScore(otherUser));
+                                        otherOut.println("playo " + db.getScore(currentUser));
                                         out.flush();
                                         otherOut.flush();
                                         String userOption;
@@ -334,10 +333,11 @@ public class XoServer {
                                 }
                             }
                         } else if (rule.contains("save")) {
+                            System.out.println(rule);
                             db.saveRecord(currentUser, rule.substring(4));
 
                         } else if (rule.contains("records")) {
-                             out.println(db.getRecords(currentUser));
+                             out.println("records " + db.getRecords(currentUser));
                              out.flush();
 
                         } else {
