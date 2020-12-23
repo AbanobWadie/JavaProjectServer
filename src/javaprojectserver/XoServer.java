@@ -165,7 +165,7 @@ public class XoServer {
                     for (String st : db.getOnlineUsers()) {
                         if (!st.equals(currentUser)) {
                             if (!db.isAvailable(st)) {
-                                sb.append(st).append(",(In-Game) ");
+                                sb.append(st).append(",+").append(db.getScore(st)).append(",(In-Game) ");
                             } else {
                                 sb.append(st).append(" ");
                             }
@@ -173,7 +173,8 @@ public class XoServer {
                     }
                     out.println(sb.toString());
                     out.flush();
-                   
+                    out.println(db.getScore(currentUser));
+                    out.flush();
                     if (in.ready()) {
                         rule = in.readLine();
                         if (rule == null || rule.equals("exit")) {
