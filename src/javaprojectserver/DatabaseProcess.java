@@ -352,4 +352,20 @@ public class DatabaseProcess {
         }
 
     }
+    
+    public synchronized String getRecords(String Player) {
+        StringBuilder sb=new StringBuilder();
+        try {
+             PreparedStatement pst;
+             pst = con.prepareStatement("select RECORD from RECORDS where USERNAME = ?");
+             pst.setString(1, Player);
+             ResultSet rs =pst.executeQuery();
+             while(rs.next()){
+              sb.append(rs.getString(1));
+             }
+        } catch (SQLException ex) {
+            Logger.getLogger(DatabaseProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       return sb.toString();
+    }
 }
