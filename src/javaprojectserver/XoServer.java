@@ -334,8 +334,9 @@ public class XoServer {
                             }
                         } else if (rule.contains("save")) {
                             db.saveRecord(currentUser, rule.substring(4));
-                        } else if (rule.contains("records")) {
-
+                        } else if (rule.equals("records")) {
+                            out.println("records" + ",www AI 1|X 5|O 2|X 3|O 7|X 4|O 6|X 9|O 8|X");
+                            out.flush();
                         } else {
                             out.println("no");
                             out.flush();
