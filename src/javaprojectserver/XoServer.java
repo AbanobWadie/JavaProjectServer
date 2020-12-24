@@ -337,7 +337,8 @@ public class XoServer {
                             db.saveRecord(currentUser, rule.substring(4));
 
                         } else if (rule.contains("records")) {
-                             out.println("records " + db.getRecords(currentUser));
+                            System.out.println(db.getRecords(currentUser));
+                             out.println("records," + db.getRecords(currentUser));
                              out.flush();
 
                         } else {
