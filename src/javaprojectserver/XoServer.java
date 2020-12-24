@@ -203,7 +203,7 @@ public class XoServer {
                                         break;
                                     }
                                 }
-
+                                
                             }
                             
                         } else if (rule.contains("play")) {
@@ -274,8 +274,10 @@ public class XoServer {
                                                     out.flush();
                                                     break;
                                                 }
-                                                otherOut.println(userOption);
-                                                otherOut.flush();
+                                                    otherOut.println(userOption);
+                                                    otherOut.flush();
+                                                
+                                                
 
                                             }
                                             if (otherIN.ready()) {
@@ -316,14 +318,17 @@ public class XoServer {
                                                     out.flush();
                                                     break;
                                                 }
-                                                out.println(userOption);
-                                                out.flush();
+                                                    out.println(userOption);
+                                                    out.flush();
+                                                
+                                                
 
                                             }
                                         }
                                         userOut.put(currentUser, out);
                                         userIn.put(currentUser, in);
                                         db.updateUserAvailabelty(currentUser, true);
+                                        db.updateUserAvailabelty(otherUser, true);
                                     }
 
                                 }
