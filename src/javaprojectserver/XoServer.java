@@ -159,7 +159,7 @@ public class XoServer {
                 PrintWriter otherOut;
                 BufferedReader otherIN;
                 while (runing) {
-
+                   
                     StringBuilder sb = new StringBuilder();
                     sb.append("(online-list) ");
                     for (String st : db.getOnlineUsers()) {
@@ -205,11 +205,7 @@ public class XoServer {
                                 }
 
                             }
-                            try {
-                                Thread.sleep(1000l);
-                            } catch (InterruptedException ex) {
-                                Logger.getLogger(XoServer.class.getName()).log(Level.SEVERE, null, ex);
-                            }
+                            
                         } else if (rule.contains("play")) {
                             String st[] = rule.split(" ");
                             if (st.length > 1) {
